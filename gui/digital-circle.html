@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Item</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            max-width: 600px;
+            margin: 30px auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        input[type="text"] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            width: calc(100% - 22px); 
+            margin-bottom: 20px;
+        }
+
+        button[type="submit"] {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #003d82;
+        }
+
+        #success-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        #success-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h1>Cadastro</h1>
+        </div>
+        <div class="card-content">
+            <form id="itemForm">
+                <input type="text" id="novoItem" placeholder="Novo Item" required>
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+    </div>
+    <div 
+        id="success-message">Item adicionado com sucesso!
+    </div>
+
+    <script>
+        document.getElementById('itemForm').onsubmit = function(event) {
+            event.preventDefault(); 
+            var novoItem = document.getElementById('novoItem').value;
+
+            fetch('http://localhost:8080/tb01', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ col_texto: novoItem }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na rede');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Item adicionado:', data);
+                mostrarMensagemSucesso();
+                document.getElementById('novoItem').value = ''; 
+            })
+            .catch((error) => {
+                console.error('Erro:', error);
+            });
+        };
+
+        function mostrarMensagemSucesso() {
+            var messageBox = document.getElementById('success-message');
+            messageBox.classList.add('active');
+
+            // Esconder a mensagem após 3 segundos
+            setTimeout(function() {
+                messageBox.classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
