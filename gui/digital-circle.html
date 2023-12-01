@@ -86,6 +86,13 @@
                 <button type="submit">Adicionar</button>
             </form>
         </div>
+        <div 
+            class="card-header">
+            <h2>Últimos Itens</h2>
+        </div>
+        <ul 
+            id="listaItens">
+        </ul>
     </div>
     <div 
         id="success-message">Item adicionado com sucesso!
@@ -123,11 +130,37 @@
             var messageBox = document.getElementById('success-message');
             messageBox.classList.add('active');
 
-            // Esconder a mensagem após 3 segundos
             setTimeout(function() {
                 messageBox.classList.remove('active');
             }, 3000);
         }
+
+        function buscarUltimosRegistros() {
+            fetch('http://localhost:8080/tb01')
+            .then(response => response.json())
+            .then(data => {
+                const lista = document.getElementById('listaItens');
+                lista.innerHTML = ''; 
+                data.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.col_texto} - ${new Date(item.col_dt).toLocaleString()}`;
+                    lista.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Erro ao buscar registros:', error));
+        }
+
+        function mostrarMensagemSucesso() {
+            var messageBox = document.getElementById('success-message');
+            messageBox.classList.add('active');
+            buscarUltimosRegistros(); 
+
+            setTimeout(function() {
+                messageBox.classList.remove('active');
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', buscarUltimosRegistros);
     </script>
 </body>
 </html>
